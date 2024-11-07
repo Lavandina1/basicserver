@@ -17,10 +17,12 @@ class ListeningSocket : public BindingSocket
     int m_listening;
 
   public:
+    //Constructor
     ListeningSocket(int domain, int type, int protocol, int port, std::string ipAddress, int backlog);
-    void start_listening();
-    void set_backlog(int backlog);
+    
     void test_listening(int listening);
+    
+    void set_backlog(int backlog);
 };
 
 } // namespace bnet

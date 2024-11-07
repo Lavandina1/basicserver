@@ -20,10 +20,6 @@ class BindingSocket : public BasicSocket
     // Constructor
     BindingSocket(int domain, int type, int protocol, int port, std::string ipAddress);
 
-
-
-    //int connect_to_network(int sock, struct sockaddr_in address);
-
     void test_binding(int binding);
 
     int get_binding();
