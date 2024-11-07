@@ -1,27 +1,44 @@
-#include "bindingsocket.h"
-#include <WS2tcpip.h>
-#include <cstdint>
-#include <errno.h>
+#pragma comment(lib, "ws2_32.lib")
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
 #include <winsock2.h>
+#include <WS2tcpip.h>
+#include <string>
+#include "bindingsocket.h"
 
 // Constructor
-bnet::BindingSocket::BindingSocket(int domain, int type, int protocol, int port, u_long ipAddress)
-    : bnet::SimpleSocket::SimpleSocket(domain, type, protocol, port, ipAddress)
+bnet::BindingSocket::BindingSocket(int domain, int type, int protocol, int port, std::string ipAddress)
+    : bnet::BasicSocket::BasicSocket(domain, type, protocol)
 {
-    m_binding = connect_to_network(get_sock(), get_address());
-    test_connection(m_binding);
+
+    // We convert prepare to convert the string into a valid type
+    const char* ip = ipAddress.c_str();
+
+    // Define adress structure
+    m_address.sin_family = domain;
+    m_address.sin_port = htons(port);
+    m_address.sin_addr.s_addr = inet_addr(ip);
+
+    // We bind the socket
+    m_binding = bind(get_sock(), reinterpret_cast<sockaddr*>(&m_address), sizeof(m_address));
+    test_binding(m_binding);
 }
 
-// Definition of connect_to_network virtual function
-int bnet::BindingSocket::connect_to_network(int sock, struct sockaddr_in address)
+
+void bnet::BindingSocket::test_binding(int binding)
 {
-    return bind(sock, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+    if (binding != 0){
+        std::cout << "Could not bind socket \n";
+    }  else  std::cout << "Binding \n";
 }
+
 
 int bnet::BindingSocket::get_binding()
 {
     return m_binding;
+}
+
+
+struct sockaddr_in bnet::BindingSocket::get_address()
+{
+    return m_address;
 }
